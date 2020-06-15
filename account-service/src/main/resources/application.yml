@@ -14,9 +14,12 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:mysql://health-note-db.ctvminqtmbqk.ap-northeast-2.rds.amazonaws.com:3306/Account?serverTimezone=Asia/Seoul&useSSL=false&characterEncoding=UTF-8
-    username: healthnote
-    password: gpftm12!
+#    url: jdbc:mysql://health-note-db.ctvminqtmbqk.ap-northeast-2.rds.amazonaws.com:3306/User?serverTimezone=Asia/Seoul&useSSL=false&characterEncoding=UTF-8
+#    username: healthnote
+#    password: gpftm12!
+    url: jdbc:mysql://localhost:3306/balzzak?serverTimezone=UTC&characterEncoding=UTF-8
+    username: balzzak_user
+    password: balzzak_pass
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 30000
