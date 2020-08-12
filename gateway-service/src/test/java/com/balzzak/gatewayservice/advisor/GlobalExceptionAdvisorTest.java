@@ -44,6 +44,17 @@ class GlobalExceptionAdvisorTest {
     }
 
     @Test
+    void testHandleMethodArgumentTypeMismatch() throws Exception {
+        // given
+        // when
+        this.mockMvc.perform(get("/api/tests/ttt").contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code", is(CommonErrorCode.MISMATCHING_TYPE_VALUE.getCode())))
+                .andDo(print());
+        // then
+    }
+
+    @Test
     void testHandleNoHandlerFoundException() throws Exception {
         // given
         // when
