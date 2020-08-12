@@ -23,6 +23,17 @@ class GlobalExceptionAdvisorTest {
     private MockMvc mockMvc;
 
     @Test
+    void testHandleNoHandlerFoundException() throws Exception {
+        // given
+        // when
+        this.mockMvc.perform(get("/t").contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code", is(CommonErrorCode.NO_HANDLER_FOUND.getCode())))
+                .andDo(print());
+        // then
+    }
+
+    @Test
     void testHandleException() throws Exception {
         // given
         // when
