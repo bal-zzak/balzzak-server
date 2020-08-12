@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -50,6 +51,15 @@ public class GlobalExceptionAdvisor extends ResponseEntityExceptionHandler {
 
         final String message = String.format("%s variable is missing", ex.getVariableName());
         final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.MISSING_INPUT_VALUE, message, ex);
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
+    }
+
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        printExceptionLog(ex);
+
+        final String message = String.format("%s should be of type %s", ex.getName(), ex.getRequiredType().getName());
+        final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.MISMATCHING_TYPE_VALUE, message, ex);
         return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
     }
 
