@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -29,6 +30,17 @@ class GlobalExceptionAdvisorTest {
         this.mockMvc.perform(get("/t").contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code", is(CommonErrorCode.NO_HANDLER_FOUND.getCode())))
+                .andDo(print());
+        // then
+    }
+
+    @Test
+    void testHandleHttpRequestMethodNotSupported() throws Exception {
+        // given
+        // when
+        this.mockMvc.perform(delete("/wow").contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.code", is(CommonErrorCode.METHOD_NOT_ALLOWED.getCode())))
                 .andDo(print());
         // then
     }
