@@ -24,6 +24,27 @@ class GlobalExceptionAdvisorTest {
     private MockMvc mockMvc;
 
     @Test
+    void testOK() throws Exception {
+        // given
+        // when
+        this.mockMvc.perform(get("/api/tests/2").contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(2)));
+        // then
+    }
+
+    @Test
+    void testHandleMissingServletRequestParameter() throws Exception {
+        // given
+        // when
+        this.mockMvc.perform(get("/api/tests").contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code", is(CommonErrorCode.MISSING_INPUT_VALUE.getCode())))
+                .andDo(print());
+        // then
+    }
+
+    @Test
     void testHandleNoHandlerFoundException() throws Exception {
         // given
         // when
