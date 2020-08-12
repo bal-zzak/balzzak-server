@@ -11,8 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,6 +61,17 @@ class GlobalExceptionAdvisorTest {
         this.mockMvc.perform(delete("/wow").contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(jsonPath("$.code", is(CommonErrorCode.METHOD_NOT_ALLOWED.getCode())))
+                .andDo(print());
+        // then
+    }
+
+    @Test
+    void testHandleHttpMediaTypeNotSupported() throws Exception {
+        // given
+        // when
+        this.mockMvc.perform(post("/api/tests").content("").contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isUnsupportedMediaType())
+                .andExpect(jsonPath("$.code", is(CommonErrorCode.UNSUPPORTED_MEDIA_TYPE.getCode())))
                 .andDo(print());
         // then
     }
