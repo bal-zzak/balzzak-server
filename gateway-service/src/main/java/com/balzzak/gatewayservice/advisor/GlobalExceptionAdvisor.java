@@ -7,9 +7,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingPathVariableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -19,6 +22,33 @@ import java.util.Objects;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionAdvisor extends ResponseEntityExceptionHandler {
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        printExceptionLog(ex);
+
+        final String message = String.format("%s parameter is missing", ex.getParameterName());
+        final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.MISSING_INPUT_VALUE, message, ex);
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestPart(MissingServletRequestPartException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        printExceptionLog(ex);
+
+        final String message = String.format("%s part is missing", ex.getRequestPartName());
+        final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.MISSING_INPUT_VALUE, message, ex);
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        printExceptionLog(ex);
+
+        final String message = String.format("%s variable is missing", ex.getVariableName());
+        final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.MISSING_INPUT_VALUE, message, ex);
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
+    }
 
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {

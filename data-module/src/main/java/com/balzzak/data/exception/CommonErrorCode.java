@@ -1,6 +1,7 @@
 package com.balzzak.data.exception;
 
 public enum CommonErrorCode implements ErrorCode {
+    MISSING_INPUT_VALUE(400, "common-4000"),
     NO_HANDLER_FOUND(404, "common-4040"),
     METHOD_NOT_ALLOWED(405, "common-4050"),
     INTERNAL_SERVER_ERROR(500, "common-5000");
