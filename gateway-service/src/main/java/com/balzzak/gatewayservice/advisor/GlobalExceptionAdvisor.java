@@ -5,7 +5,9 @@ import com.balzzak.data.exception.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -18,6 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ControllerAdvice
@@ -68,6 +71,18 @@ public class GlobalExceptionAdvisor extends ResponseEntityExceptionHandler {
         String message = String.format("HTTP method %s is not supported by this URL", ex.getMethod());
         final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.METHOD_NOT_ALLOWED, message, ex);
         return new ResponseEntity<>(errorResponseDto, headers, HttpStatus.valueOf(errorResponseDto.getStatus()));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        printExceptionLog(ex);
+
+        String supportedTypes = ex.getSupportedMediaTypes().stream()
+                .map(MediaType::getType)
+                .collect(Collectors.joining(" "));
+        String message = String.format("%s media type is not supported. Supported media types are %s", ex.getContentType(), supportedTypes);
+        final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.UNSUPPORTED_MEDIA_TYPE, message, ex);
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
     }
 
     @ExceptionHandler(Exception.class)
