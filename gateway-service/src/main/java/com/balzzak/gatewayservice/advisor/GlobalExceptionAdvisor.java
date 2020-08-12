@@ -6,11 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+
+import java.util.Objects;
 
 @Slf4j
 @ControllerAdvice
@@ -23,6 +27,17 @@ public class GlobalExceptionAdvisor extends ResponseEntityExceptionHandler {
         String message = String.format("Could not find the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL());
         final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.NO_HANDLER_FOUND, message, ex);
         return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        printExceptionLog(ex);
+
+        headers.setAllow(Objects.requireNonNull(ex.getSupportedHttpMethods()));
+
+        String message = String.format("HTTP method %s is not supported by this URL", ex.getMethod());
+        final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.METHOD_NOT_ALLOWED, message, ex);
+        return new ResponseEntity<>(errorResponseDto, headers, HttpStatus.valueOf(errorResponseDto.getStatus()));
     }
 
     @ExceptionHandler(Exception.class)
