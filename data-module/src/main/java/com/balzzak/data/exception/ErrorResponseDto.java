@@ -2,7 +2,9 @@ package com.balzzak.data.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,5 +34,14 @@ public class ErrorResponseDto {
 
     public static ErrorResponseDto of(ErrorCode errorCode, String message, Exception ex) {
         return new ErrorResponseDto(errorCode, message, ex);
+    }
+
+    public void addErrors(BindingResult bindingResult) {
+        for (FieldError error : bindingResult.getFieldErrors()) {
+            this.errors.add(error.getField() + ": " + error.getDefaultMessage());
+        }
+        for (ObjectError error : bindingResult.getGlobalErrors()) {
+            this.errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+        }
     }
 }

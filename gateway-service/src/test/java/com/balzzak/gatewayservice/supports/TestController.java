@@ -20,20 +20,20 @@ public class TestController {
 
     @GetMapping("/api/tests/{id}")
     public TestDto findById(@PathVariable("id") long id) {
-        return new TestDto(id, "this is test");
+        return new TestDto(id, "this is test", TestType.UNIT);
     }
 
     @GetMapping("/api/tests")
     public List<TestDto> findByContent(@RequestParam("content") String content) {
         return IntStream.range(0, 5)
                 .boxed()
-                .map(integer -> new TestDto(integer, content))
+                .map(integer -> new TestDto(integer, content, TestType.ACCEPTANCE))
                 .collect(Collectors.toList());
     }
 
     @PostMapping(value = "/api/tests")
     @ResponseStatus(HttpStatus.CREATED)
-    public TestDto create(@RequestBody TestDto testDto) {
+    public TestDto create(@RequestBody @Valid TestDto testDto) {
         return testDto;
     }
 }
