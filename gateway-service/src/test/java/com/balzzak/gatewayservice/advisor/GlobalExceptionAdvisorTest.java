@@ -71,6 +71,18 @@ class GlobalExceptionAdvisorTest {
     }
 
     @Test
+    void testHandleHttpMessageNotReadable() throws Exception {
+        // given
+        String json = "{\"id\":20,\"content\":\"Hello World\",\"type\":\"HELLO\"}";
+        // when
+        this.mockMvc.perform(post("/api/tests").contentType(MediaType.APPLICATION_JSON_UTF8).content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code", is(CommonErrorCode.INVALID_INPUT_VALUE.getCode())))
+                .andDo(print());
+        // then
+    }
+
+    @Test
     void testHandleNoHandlerFoundException() throws Exception {
         // given
         // when
