@@ -21,6 +21,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -79,6 +80,15 @@ public class GlobalExceptionAdvisor extends ResponseEntityExceptionHandler {
 
         final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.INVALID_INPUT_VALUE, "validation error", ex);
         errorResponseDto.addErrors(ex.getBindingResult());
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class})
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
+        printExceptionLog(ex);
+
+        final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.INVALID_INPUT_VALUE, "validation error", ex);
+        errorResponseDto.addErrors(ex.getConstraintViolations());
         return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
     }
 
