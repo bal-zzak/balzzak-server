@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -89,6 +90,13 @@ public class GlobalExceptionAdvisor extends ResponseEntityExceptionHandler {
 
         final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.INVALID_INPUT_VALUE, "validation error", ex);
         errorResponseDto.addErrors(ex.getConstraintViolations());
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        printExceptionLog(ex);
+        final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.INVALID_INPUT_VALUE, "request JSON is malformed", ex);
         return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
     }
 
