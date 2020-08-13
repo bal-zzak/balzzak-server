@@ -3,6 +3,7 @@ package com.balzzak.data.exception;
 public enum CommonErrorCode implements ErrorCode {
     MISSING_INPUT_VALUE(400, "common-4000"),
     MISMATCHING_TYPE_VALUE(400, "common-4001"),
+    INVALID_INPUT_VALUE(400, "common-4002"),
 
     NO_HANDLER_FOUND(404, "common-4040"),
     METHOD_NOT_ALLOWED(405, "common-4050"),

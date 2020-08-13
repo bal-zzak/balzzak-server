@@ -7,8 +7,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -18,7 +20,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -60,6 +61,24 @@ public class GlobalExceptionAdvisor extends ResponseEntityExceptionHandler {
 
         final String message = String.format("%s should be of type %s", ex.getName(), ex.getRequiredType().getName());
         final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.MISMATCHING_TYPE_VALUE, message, ex);
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        printExceptionLog(ex);
+
+        final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.INVALID_INPUT_VALUE, "validation error", ex);
+        errorResponseDto.addErrors(ex.getBindingResult());
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        printExceptionLog(ex);
+
+        final ErrorResponseDto errorResponseDto = ErrorResponseDto.of(CommonErrorCode.INVALID_INPUT_VALUE, "validation error", ex);
+        errorResponseDto.addErrors(ex.getBindingResult());
         return new ResponseEntity<>(errorResponseDto, HttpStatus.valueOf(errorResponseDto.getStatus()));
     }
 

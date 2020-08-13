@@ -2,13 +2,15 @@ package com.balzzak.gatewayservice.advisor;
 
 import com.balzzak.data.exception.CommonErrorCode;
 import com.balzzak.gatewayservice.supports.TestController;
+import com.balzzak.gatewayservice.supports.TestDto;
+import com.balzzak.gatewayservice.supports.TestType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -50,6 +52,20 @@ class GlobalExceptionAdvisorTest {
         this.mockMvc.perform(get("/api/tests/ttt").contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code", is(CommonErrorCode.MISMATCHING_TYPE_VALUE.getCode())))
+                .andDo(print());
+        // then
+    }
+
+    @Test
+    void testHandleMethodArgumentNotValidException() throws Exception {
+        // given
+        TestDto testDto = new TestDto(10000, " ", TestType.ACCEPTANCE);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(testDto);
+        // when
+        this.mockMvc.perform(post("/api/tests").contentType(MediaType.APPLICATION_JSON_UTF8).content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code", is(CommonErrorCode.INVALID_INPUT_VALUE.getCode())))
                 .andDo(print());
         // then
     }
