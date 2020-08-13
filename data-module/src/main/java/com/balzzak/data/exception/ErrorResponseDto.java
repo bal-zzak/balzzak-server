@@ -6,9 +6,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
+import javax.validation.ConstraintViolation;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @AllArgsConstructor
@@ -42,6 +44,12 @@ public class ErrorResponseDto {
         }
         for (ObjectError error : bindingResult.getGlobalErrors()) {
             this.errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+        }
+    }
+
+    public void addErrors(Set<ConstraintViolation<?>> constraintViolations) {
+        for (ConstraintViolation<?> violation : constraintViolations) {
+            this.errors.add(violation.getRootBeanClass().getSimpleName() + "." + violation.getPropertyPath() + ": " + violation.getMessage());
         }
     }
 }
