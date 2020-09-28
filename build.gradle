@@ -67,3 +67,10 @@ project(':account-service') {
         compile project(':data-module')
     }
 }
+
+project(':website-service') {
+    dependencies {
+        //compile project(':common-module')
+        compile project(':data-module')
+    }
+}
