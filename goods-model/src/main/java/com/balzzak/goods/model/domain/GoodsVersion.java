@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,10 +33,10 @@ public class GoodsVersion {
     private String filePath;
 
     @Column(nullable = false)
-    private LocalDateTime createDate;
+    private Timestamp createDate;
 
     @Column(nullable = false)
-    private LocalDateTime updateDate;
+    private Timestamp updateDate;
 
 //    @OneToMany(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "versionId")

@@ -5,6 +5,7 @@ import com.balzzak.goods.message.GoodsMessageName;
 import com.balzzak.goods.model.domain.Goods;
 import com.balzzak.goods.model.domain.GoodsCategory;
 import com.balzzak.goods.model.dto.request.GoodsDTO;
+import com.balzzak.goods.model.dto.request.GoodsGetRequest;
 import com.balzzak.goodsservice.repository.*;
 import com.balzzak.goodsservice.service.GoodsBiz;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -41,16 +44,20 @@ public class GoodsListener {
             log.warn(name.name());
             switch(name) {
                 case GOODS_GET: {
-                    Long goodsId = message.deserializeValue(Long.TYPE);
-                    List<Goods> list = goodsBiz.getGoods(goodsId, null);
-
-                    String response = message.serializeValue(list);
-                    return response;
+                    GoodsGetRequest request = message.deserializeValue(GoodsGetRequest.class);
+                    List<Goods> list = goodsBiz.getGoods(request);
+                    return message.serializeValue(list);
                 }
                 case GOODS_CATEGORY_GET: {
-                    Long goodsCategoryId = message.deserializeValue(Long.TYPE);
-                    List<Goods> list = goodsBiz.getGoods(null, goodsCategoryId);
-                    return message.serializeValue(list);
+                    Long categoryId = message.deserializeValue(Long.class);
+                    if(categoryId == null) {
+                        List<GoodsCategory> categories = goodsCategoryRepository.findAll();
+                        return message.serializeValue(categories);
+                    } else {
+                        Optional<GoodsCategory> category = goodsCategoryRepository.findById(categoryId);
+                        List<GoodsCategory> categories = category.stream().collect(Collectors.toList());
+                        return message.serializeValue(categories);
+                    }
                 }
                 case GOODS_SET:{
                     GoodsDTO goodsDTO = message.deserializeValue();
@@ -58,12 +65,12 @@ public class GoodsListener {
                     break;
                 }
                 case GOODS_DEL:{
-                    long goodsId = message.deserializeValue(long.class);
+                    long goodsId = message.deserializeValue(Long.class);
                     goodsBiz.deleteGoods(goodsId);
                     break;
                 }
                 case CATEGORY_DEL:{
-                    long goodsCategoryId = message.deserializeValue(long.class);
+                    long goodsCategoryId = message.deserializeValue(Long.class);
                     goodsBiz.deleteGoodsCategory(goodsCategoryId);
                     break;
                 }
@@ -73,7 +80,7 @@ public class GoodsListener {
             }
 
         } catch (Exception ex) {
-
+            ex.printStackTrace();
         }
         return new RuntimeException("runtime");
     }

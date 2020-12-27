@@ -1,21 +1,19 @@
-package com.balzzak.goods.model.domain;
+package com.balzzak.data.goods.models.domain;
+
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Id;
 import java.io.Serializable;
-
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
-public class GoodsPictureId  implements Serializable  {
+public class GoodsSetId  implements Serializable {
 
     @EqualsAndHashCode.Include
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long pictureId;
+    private long setGoodsId;
 
     @EqualsAndHashCode.Include
     @Id

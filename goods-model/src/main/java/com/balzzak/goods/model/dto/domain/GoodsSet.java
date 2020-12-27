@@ -1,6 +1,5 @@
-package com.balzzak.goods.model.domain;
+package com.balzzak.data.goods.models.domain;
 
-import com.balzzak.goods.model.domain.compositekey.GoodsSetCompositeId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "GoodsSet")
-@IdClass(GoodsSetCompositeId.class)
+@IdClass(GoodsSetId.class)
 public class GoodsSet {
 
     @Id
@@ -22,8 +21,8 @@ public class GoodsSet {
     private long goodsId;
 
     @Column(nullable = false)
-    private Timestamp createDate;
+    private LocalDateTime createDate;
 
     @Column(nullable = false)
-    private Timestamp updateDate;
+    private LocalDateTime updateDate;
 }

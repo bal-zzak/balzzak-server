@@ -4,7 +4,6 @@ import com.balzzak.common.utils.DatetimeHelper;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Currency;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -48,10 +47,10 @@ public class GoodsCategory {
     private String categoryName;
 
     @Column(nullable = false)
-    private LocalDateTime createDate;
+    private Timestamp createDate;
 
     @Column(nullable = false)
-    private LocalDateTime updateDate;
+    private Timestamp updateDate;
 
     //@OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
     @Transient
